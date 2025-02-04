@@ -5,16 +5,18 @@ public class PlayerCommandService : IPlayerCommandService
     {
         _repository = repository;
     }
+
     public Player RecordGoal(string playerName)
     {
         var player = _repository.GetAllPlayers()
             .FirstOrDefault(p => p.Name.Equals(playerName, StringComparison.OrdinalIgnoreCase));
         if (player == null)
-            throw new Exception("Player not found");
+            throw new NotFoundException("Player not found");
         var updated = new Player(player.Name, player.Nationality, player.GoalsScored + 1, player.Age);
         _repository.UpdatePlayer(updated);
         return updated;
     }
+
     public IEnumerable<Player> RecordGoals(IEnumerable<string> playerNames)
     {
         var lowerNames = new HashSet<string>(playerNames.Select(n => n.ToLowerInvariant()));

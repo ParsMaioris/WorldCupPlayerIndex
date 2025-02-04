@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text.Json;
 
 [TestClass]
@@ -26,6 +27,7 @@ public class PlayerQueryControllerTests
         var response = await _client!.GetAsync("/api/PlayerQuery/older-than/30");
         response.EnsureSuccessStatusCode();
         var players = await response.Content.ReadFromJsonAsync<List<Player>>() ?? new List<Player>();
+
         Assert.IsTrue(players.Any(p => p.Name == "Cristiano Ronaldo"));
         Assert.IsTrue(players.Any(p => p.Name == "Lionel Messi"));
         Assert.IsFalse(players.Any(p => p.Name == "Kylian Mbappe"));
@@ -37,6 +39,7 @@ public class PlayerQueryControllerTests
         var response = await _client!.GetAsync("/api/PlayerQuery/nationality/Portugal");
         response.EnsureSuccessStatusCode();
         var players = await response.Content.ReadFromJsonAsync<List<Player>>() ?? new List<Player>();
+
         Assert.IsTrue(players.All(p => p.Nationality.ToLower() == "portugal"));
         Assert.IsTrue(players.Any(p => p.Name == "Bruno Fernandes"));
     }
@@ -48,6 +51,7 @@ public class PlayerQueryControllerTests
         response.EnsureSuccessStatusCode();
         var names = await response.Content.ReadFromJsonAsync<List<string>>() ?? new List<string>();
         var expectedCount = SeedData.CreateSamplePlayers().Count();
+
         Assert.AreEqual(expectedCount, names.Count);
     }
 
@@ -140,5 +144,19 @@ public class PlayerQueryControllerTests
         var expectedCount = SeedData.CreateSamplePlayers().Select(p => p.Nationality).Distinct().Count();
 
         Assert.AreEqual(expectedCount, nations.Count);
+    }
+
+    [TestMethod]
+    public async Task GetTopPerformer_NoPlayers_ReturnsNotFound()
+    {
+        using var emptyFactory = new EmptySeedCustomWebApplicationFactory();
+        using var client = emptyFactory.CreateClient();
+        var response = await client.GetAsync("/api/PlayerQuery/top-performer");
+
+        Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+
+        var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+
+        Assert.AreEqual("No players found", errorResponse?.Error);
     }
 }

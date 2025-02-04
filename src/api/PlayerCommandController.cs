@@ -13,28 +13,14 @@ public class PlayerCommandController : ControllerBase
     [HttpPost("{playerName}/record-goal")]
     public ActionResult<Player> RecordGoal(string playerName)
     {
-        try
-        {
-            var updatedPlayer = _service.RecordGoal(playerName);
-            return Ok(updatedPlayer);
-        }
-        catch (Exception ex)
-        {
-            return NotFound(ex.Message);
-        }
+        var updatedPlayer = _service.RecordGoal(playerName);
+        return Ok(updatedPlayer);
     }
 
     [HttpPost("record-goals")]
     public ActionResult<IEnumerable<Player>> RecordGoals([FromBody] IEnumerable<string> playerNames)
     {
-        try
-        {
-            var updatedPlayers = _service.RecordGoals(playerNames);
-            return Ok(updatedPlayers);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        var updatedPlayers = _service.RecordGoals(playerNames);
+        return Ok(updatedPlayers);
     }
 }

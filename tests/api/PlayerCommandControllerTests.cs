@@ -1,3 +1,5 @@
+using System.Net;
+
 [TestClass]
 public class PlayerCommandControllerTests
 {
@@ -38,7 +40,19 @@ public class PlayerCommandControllerTests
         response.EnsureSuccessStatusCode();
         var players = await response.Content.ReadFromJsonAsync<List<Player>>() ?? new List<Player>();
 
-        Assert.IsTrue(players.Any(p => p.Name == "Lionel Messi" && p.GoalsScored == 751));
-        Assert.IsTrue(players.Any(p => p.Name == "Cristiano Ronaldo" && p.GoalsScored == 801));
+        Assert.IsTrue(players.Exists(p => p.Name == "Lionel Messi" && p.GoalsScored == 751));
+        Assert.IsTrue(players.Exists(p => p.Name == "Cristiano Ronaldo" && p.GoalsScored == 801));
+    }
+
+    [TestMethod]
+    public async Task RecordGoal_NonExistentPlayer_ReturnsNotFound()
+    {
+        var response = await _client!.PostAsync("/api/PlayerCommand/NonExistent/record-goal", null);
+
+        Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+
+        var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+
+        Assert.AreEqual("Player not found", errorResponse?.Error);
     }
 }

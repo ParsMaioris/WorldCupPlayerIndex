@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,26 @@ builder.Services.AddScoped<IPlayerCommandService, PlayerCommandService>();
 builder.Services.AddScoped<IPlayerQueryService, PlayerQueryService>();
 
 var app = builder.Build();
+
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+        var error = exceptionHandlerFeature?.Error;
+
+        int statusCode = error switch
+        {
+            NotFoundException => StatusCodes.Status404NotFound,
+            _ => StatusCodes.Status500InternalServerError
+        };
+
+        context.Response.StatusCode = statusCode;
+        context.Response.ContentType = "application/json";
+        var response = new { error = error?.Message };
+        await context.Response.WriteAsJsonAsync(response);
+    });
+});
 
 app.UseHttpsRedirection();
 app.UseRouting();

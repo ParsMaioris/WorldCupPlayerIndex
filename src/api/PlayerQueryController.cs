@@ -62,15 +62,8 @@ public class PlayerQueryController : ControllerBase
     [HttpGet("top-performer")]
     public ActionResult<Player> GetTopPerformer()
     {
-        try
-        {
-            var player = _service.GetTopPerformer();
-            return Ok(player);
-        }
-        catch (Exception ex)
-        {
-            return NotFound(ex.Message);
-        }
+        var player = _service.GetTopPerformer();
+        return Ok(player);
     }
 
     [HttpGet("paged")]

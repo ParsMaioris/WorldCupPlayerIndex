@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
+    protected virtual bool SeedDatabase => true;
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         var projectDir = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "../../../src/infra"));
@@ -15,9 +17,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             var descriptor = services.SingleOrDefault(
                 d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
             if (descriptor != null)
-            {
                 services.Remove(descriptor);
-            }
 
             var connection = new SqliteConnection("Data Source=:memory:");
             connection.Open();
@@ -31,15 +31,15 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
             using (var scope = sp.CreateScope())
             {
-                var scopedServices = scope.ServiceProvider;
-                var db = scopedServices.GetRequiredService<AppDbContext>();
-                var logger = scopedServices.GetRequiredService<ILogger<CustomWebApplicationFactory>>();
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger<CustomWebApplicationFactory>>();
 
                 try
                 {
+                    db.Database.EnsureDeleted();
                     db.Database.EnsureCreated();
 
-                    if (!db.Players.Any())
+                    if (SeedDatabase && !db.Players.Any())
                     {
                         db.Players.AddRange(SeedData.CreateSamplePlayers());
                         db.SaveChanges();
