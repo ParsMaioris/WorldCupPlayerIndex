@@ -3,6 +3,17 @@ using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var fileLoggerOptions = new FileLoggerOptions
+{
+    LogDirectory = "Logs",
+    FileNamePrefix = "app",
+    RetentionDays = 7,
+    MinimumLogLevel = LogLevel.Warning
+};
+
+builder.Logging.ClearProviders();
+builder.Logging.AddProvider(new FileLoggerProvider(fileLoggerOptions));
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
