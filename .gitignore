@@ -484,3 +484,6 @@ $RECYCLE.BIN/
 *.swp
 buildTasks.js
 buildTools.js
+app.db
+app.db-wal
+app.db-shm
