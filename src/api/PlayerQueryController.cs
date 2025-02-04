@@ -39,7 +39,7 @@ public class PlayerQueryController : ControllerBase
     }
 
     [HttpGet("grouped-by-nationality")]
-    public ActionResult<IEnumerable<IGrouping<string, Player>>> GetPlayersGroupedByNationality()
+    public ActionResult<IDictionary<string, List<Player>>> GetPlayersGroupedByNationality()
     {
         var grouped = _service.GetPlayersGroupedByNationality();
         return Ok(grouped);

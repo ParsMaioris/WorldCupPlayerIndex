@@ -74,9 +74,9 @@ public class PlayerQueryControllerTests
         using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
         var root = document.RootElement;
 
-        Assert.AreEqual(JsonValueKind.Array, root.ValueKind);
+        Assert.AreEqual(JsonValueKind.Object, root.ValueKind);
 
-        int groupCount = root.GetArrayLength();
+        int groupCount = root.EnumerateObject().Count();
         var expectedCount = SeedData.CreateSamplePlayers().GroupBy(p => p.Nationality).Count();
 
         Assert.AreEqual(expectedCount, groupCount);

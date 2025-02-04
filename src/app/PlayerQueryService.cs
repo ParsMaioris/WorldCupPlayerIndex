@@ -19,8 +19,10 @@ public class PlayerQueryService : IPlayerQueryService
     public int GetTotalGoals() =>
         _repository.GetAllPlayers().Sum(p => p.GoalsScored);
 
-    public IEnumerable<IGrouping<string, Player>> GetPlayersGroupedByNationality() =>
-        _repository.GetAllPlayers().GroupBy(p => p.Nationality);
+    public IDictionary<string, List<Player>> GetPlayersGroupedByNationality() =>
+    _repository.GetAllPlayers()
+               .GroupBy(p => p.Nationality)
+               .ToDictionary(g => g.Key, g => g.ToList());
 
     public IEnumerable<Player> GetPlayersOrderedByPerformanceScore(bool descending = true) =>
         descending

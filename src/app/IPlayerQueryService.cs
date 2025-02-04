@@ -4,7 +4,7 @@ public interface IPlayerQueryService
     IEnumerable<Player> GetPlayersByNationality(string nationality);
     IEnumerable<string> GetPlayerNames();
     int GetTotalGoals();
-    IEnumerable<IGrouping<string, Player>> GetPlayersGroupedByNationality();
+    IDictionary<string, List<Player>> GetPlayersGroupedByNationality();
     IEnumerable<Player> GetPlayersOrderedByPerformanceScore(bool descending = true);
     bool AnyPlayerReachedGoalThreshold(int goalThreshold);
     Player GetTopPerformer();
