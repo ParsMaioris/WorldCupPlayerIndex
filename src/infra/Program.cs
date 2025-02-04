@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 var fileLoggerOptions = new FileLoggerOptions
 {
-    LogDirectory = "Logs",
+    LogDirectory = "logs",
     FileNamePrefix = "app",
     RetentionDays = 7,
     MinimumLogLevel = LogLevel.Warning

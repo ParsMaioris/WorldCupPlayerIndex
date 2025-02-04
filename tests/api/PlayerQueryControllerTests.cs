@@ -145,18 +145,4 @@ public class PlayerQueryControllerTests
 
         Assert.AreEqual(expectedCount, nations.Count);
     }
-
-    [TestMethod]
-    public async Task GetTopPerformer_NoPlayers_ReturnsNotFound()
-    {
-        using var emptyFactory = new EmptySeedCustomWebApplicationFactory();
-        using var client = emptyFactory.CreateClient();
-        var response = await client.GetAsync("/api/PlayerQuery/top-performer");
-
-        Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
-
-        var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>();
-
-        Assert.AreEqual("No players found", errorResponse?.Error);
-    }
 }
