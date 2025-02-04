@@ -6,6 +6,9 @@ public class PlayerDomainService : IPlayerDomainService
         _repository = repository;
     }
 
-    public IEnumerable<Player> GetVeteranPlayers() =>
-        _repository.GetAllPlayers().Where(p => p.IsVeteran());
+    public async Task<IEnumerable<Player>> GetVeteranPlayersAsync()
+    {
+        var players = await _repository.GetAllPlayersAsync();
+        return players.Where(p => p.IsVeteran());
+    }
 }

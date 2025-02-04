@@ -7,8 +7,8 @@ public class PlayerApplicationService : IPlayerApplicationService
         _playerDomainService = playerDomainService;
     }
 
-    public IEnumerable<Player> GetVeteranPlayers()
+    public async Task<IEnumerable<Player>> GetVeteranPlayersAsync()
     {
-        return _playerDomainService.GetVeteranPlayers();
+        return await _playerDomainService.GetVeteranPlayersAsync();
     }
 }

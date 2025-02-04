@@ -1,4 +1,4 @@
 public interface IPlayerApplicationService
 {
-    IEnumerable<Player> GetVeteranPlayers();
+    Task<IEnumerable<Player>> GetVeteranPlayersAsync();
 }

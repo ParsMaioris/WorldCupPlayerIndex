@@ -43,12 +43,12 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    dbContext.Database.EnsureCreated();
+    await dbContext.Database.EnsureCreatedAsync();
 
-    if (!dbContext.Players.Any())
+    if (!await dbContext.Players.AnyAsync())
     {
         dbContext.Players.AddRange(SeedData.CreateSamplePlayers());
-        dbContext.SaveChanges();
+        await dbContext.SaveChangesAsync();
     }
 }
 
@@ -84,6 +84,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+await app.RunAsync();
 
 public partial class Program { }

@@ -37,7 +37,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
                 try
                 {
-                    db.Database.EnsureCreated();
+                    db.Database.EnsureCreatedAsync().GetAwaiter().GetResult();
 
                     if (!db.Players.Any())
                     {

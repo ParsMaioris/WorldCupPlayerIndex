@@ -1,13 +1,13 @@
 public interface IPlayerQueryService
 {
-    IEnumerable<Player> GetPlayersOlderThan(int age);
-    IEnumerable<Player> GetPlayersByNationality(string nationality);
-    IEnumerable<string> GetPlayerNames();
-    int GetTotalGoals();
-    IDictionary<string, List<Player>> GetPlayersGroupedByNationality();
-    IEnumerable<Player> GetPlayersOrderedByPerformanceScore(bool descending = true);
-    bool AnyPlayerReachedGoalThreshold(int goalThreshold);
-    Player GetTopPerformer();
-    IEnumerable<Player> GetPlayersPaged(int pageNumber, int pageSize);
-    IEnumerable<string> GetDistinctNationalities();
+    Task<IEnumerable<Player>> GetPlayersOlderThanAsync(int age);
+    Task<IEnumerable<Player>> GetPlayersByNationalityAsync(string nationality);
+    Task<IEnumerable<string>> GetPlayerNamesAsync();
+    Task<int> GetTotalGoalsAsync();
+    Task<IDictionary<string, List<Player>>> GetPlayersGroupedByNationalityAsync();
+    Task<IEnumerable<Player>> GetPlayersOrderedByPerformanceScoreAsync(bool descending = true);
+    Task<bool> AnyPlayerReachedGoalThresholdAsync(int goalThreshold);
+    Task<Player> GetTopPerformerAsync();
+    Task<IEnumerable<Player>> GetPlayersPagedAsync(int pageNumber, int pageSize);
+    Task<IEnumerable<string>> GetDistinctNationalitiesAsync();
 }

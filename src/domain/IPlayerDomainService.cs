@@ -1,4 +1,4 @@
 public interface IPlayerDomainService
 {
-    IEnumerable<Player> GetVeteranPlayers();
+    Task<IEnumerable<Player>> GetVeteranPlayersAsync();
 }

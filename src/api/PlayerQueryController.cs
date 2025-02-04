@@ -11,72 +11,72 @@ public class PlayerQueryController : ControllerBase
     }
 
     [HttpGet("older-than/{age}")]
-    public ActionResult<IEnumerable<Player>> GetPlayersOlderThan(int age)
+    public async Task<ActionResult<IEnumerable<Player>>> GetPlayersOlderThanAsync(int age)
     {
-        var players = _service.GetPlayersOlderThan(age);
+        var players = await _service.GetPlayersOlderThanAsync(age);
         return Ok(players);
     }
 
     [HttpGet("nationality/{nationality}")]
-    public ActionResult<IEnumerable<Player>> GetPlayersByNationality(string nationality)
+    public async Task<ActionResult<IEnumerable<Player>>> GetPlayersByNationalityAsync(string nationality)
     {
-        var players = _service.GetPlayersByNationality(nationality);
+        var players = await _service.GetPlayersByNationalityAsync(nationality);
         return Ok(players);
     }
 
     [HttpGet("names")]
-    public ActionResult<IEnumerable<string>> GetPlayerNames()
+    public async Task<ActionResult<IEnumerable<string>>> GetPlayerNamesAsync()
     {
-        var names = _service.GetPlayerNames();
+        var names = await _service.GetPlayerNamesAsync();
         return Ok(names);
     }
 
     [HttpGet("total-goals")]
-    public ActionResult<int> GetTotalGoals()
+    public async Task<ActionResult<int>> GetTotalGoalsAsync()
     {
-        var total = _service.GetTotalGoals();
+        var total = await _service.GetTotalGoalsAsync();
         return Ok(total);
     }
 
     [HttpGet("grouped-by-nationality")]
-    public ActionResult<IDictionary<string, List<Player>>> GetPlayersGroupedByNationality()
+    public async Task<ActionResult<IDictionary<string, List<Player>>>> GetPlayersGroupedByNationalityAsync()
     {
-        var grouped = _service.GetPlayersGroupedByNationality();
+        var grouped = await _service.GetPlayersGroupedByNationalityAsync();
         return Ok(grouped);
     }
 
     [HttpGet("ordered-by-performance")]
-    public ActionResult<IEnumerable<Player>> GetPlayersOrderedByPerformance([FromQuery] bool descending = true)
+    public async Task<ActionResult<IEnumerable<Player>>> GetPlayersOrderedByPerformanceAsync([FromQuery] bool descending = true)
     {
-        var players = _service.GetPlayersOrderedByPerformanceScore(descending);
+        var players = await _service.GetPlayersOrderedByPerformanceScoreAsync(descending);
         return Ok(players);
     }
 
     [HttpGet("any-player-reached")]
-    public ActionResult<bool> AnyPlayerReachedGoalThreshold([FromQuery] int threshold)
+    public async Task<ActionResult<bool>> AnyPlayerReachedGoalThresholdAsync([FromQuery] int threshold)
     {
-        var reached = _service.AnyPlayerReachedGoalThreshold(threshold);
+        var reached = await _service.AnyPlayerReachedGoalThresholdAsync(threshold);
         return Ok(reached);
     }
 
     [HttpGet("top-performer")]
-    public ActionResult<Player> GetTopPerformer()
+    public async Task<ActionResult<Player>> GetTopPerformerAsync()
     {
-        var player = _service.GetTopPerformer();
+        var player = await _service.GetTopPerformerAsync();
         return Ok(player);
     }
 
     [HttpGet("paged")]
-    public ActionResult<IEnumerable<Player>> GetPlayersPaged([FromQuery] int pageNumber, [FromQuery] int pageSize)
+    public async Task<ActionResult<IEnumerable<Player>>> GetPlayersPagedAsync([FromQuery] int pageNumber, [FromQuery] int pageSize)
     {
-        var players = _service.GetPlayersPaged(pageNumber, pageSize);
+        var players = await _service.GetPlayersPagedAsync(pageNumber, pageSize);
         return Ok(players);
     }
 
     [HttpGet("distinct-nationalities")]
-    public ActionResult<IEnumerable<string>> GetDistinctNationalities()
+    public async Task<ActionResult<IEnumerable<string>>> GetDistinctNationalitiesAsync()
     {
-        var nationalities = _service.GetDistinctNationalities();
+        var nationalities = await _service.GetDistinctNationalitiesAsync();
         return Ok(nationalities);
     }
 }

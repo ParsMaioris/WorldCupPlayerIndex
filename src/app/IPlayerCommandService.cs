@@ -1,5 +1,5 @@
 public interface IPlayerCommandService
 {
-    Player RecordGoal(string playerName);
-    IEnumerable<Player> RecordGoals(IEnumerable<string> playerNames);
+    Task<Player> RecordGoalAsync(string playerName);
+    Task<IEnumerable<Player>> RecordGoalsAsync(IEnumerable<string> playerNames);
 }

@@ -7,42 +7,69 @@ public class PlayerQueryService : IPlayerQueryService
         _repository = repository;
     }
 
-    public IEnumerable<Player> GetPlayersOlderThan(int age) =>
-        _repository.GetAllPlayers().Where(p => p.Age > age);
-
-    public IEnumerable<Player> GetPlayersByNationality(string nationality) =>
-        _repository.GetAllPlayers().Where(p => p.Nationality.Equals(nationality, StringComparison.OrdinalIgnoreCase));
-
-    public IEnumerable<string> GetPlayerNames() =>
-        _repository.GetAllPlayers().Select(p => p.Name);
-
-    public int GetTotalGoals() =>
-        _repository.GetAllPlayers().Sum(p => p.GoalsScored);
-
-    public IDictionary<string, List<Player>> GetPlayersGroupedByNationality() =>
-    _repository.GetAllPlayers()
-               .GroupBy(p => p.Nationality)
-               .ToDictionary(g => g.Key, g => g.ToList());
-
-    public IEnumerable<Player> GetPlayersOrderedByPerformanceScore(bool descending = true) =>
-        descending
-            ? _repository.GetAllPlayers().OrderByDescending(p => p.GetPerformanceScore())
-            : _repository.GetAllPlayers().OrderBy(p => p.GetPerformanceScore());
-
-    public bool AnyPlayerReachedGoalThreshold(int goalThreshold) =>
-        _repository.GetAllPlayers().Any(p => p.GoalsScored >= goalThreshold);
-
-    public Player GetTopPerformer()
+    public async Task<IEnumerable<Player>> GetPlayersOlderThanAsync(int age)
     {
-        var top = _repository.GetAllPlayers().OrderByDescending(p => p.GetPerformanceScore()).FirstOrDefault();
+        var players = await _repository.GetAllPlayersAsync();
+        return players.Where(p => p.Age > age);
+    }
+
+    public async Task<IEnumerable<Player>> GetPlayersByNationalityAsync(string nationality)
+    {
+        var players = await _repository.GetAllPlayersAsync();
+        return players.Where(p => p.Nationality.Equals(nationality, StringComparison.OrdinalIgnoreCase));
+    }
+
+    public async Task<IEnumerable<string>> GetPlayerNamesAsync()
+    {
+        var players = await _repository.GetAllPlayersAsync();
+        return players.Select(p => p.Name);
+    }
+
+    public async Task<int> GetTotalGoalsAsync()
+    {
+        var players = await _repository.GetAllPlayersAsync();
+        return players.Sum(p => p.GoalsScored);
+    }
+
+    public async Task<IDictionary<string, List<Player>>> GetPlayersGroupedByNationalityAsync()
+    {
+        var players = await _repository.GetAllPlayersAsync();
+        return players.GroupBy(p => p.Nationality)
+                      .ToDictionary(g => g.Key, g => g.ToList());
+    }
+
+    public async Task<IEnumerable<Player>> GetPlayersOrderedByPerformanceScoreAsync(bool descending = true)
+    {
+        var players = await _repository.GetAllPlayersAsync();
+        return descending
+            ? players.OrderByDescending(p => p.GetPerformanceScore())
+            : players.OrderBy(p => p.GetPerformanceScore());
+    }
+
+    public async Task<bool> AnyPlayerReachedGoalThresholdAsync(int goalThreshold)
+    {
+        var players = await _repository.GetAllPlayersAsync();
+        return players.Any(p => p.GoalsScored >= goalThreshold);
+    }
+
+    public async Task<Player> GetTopPerformerAsync()
+    {
+        var players = await _repository.GetAllPlayersAsync();
+        var top = players.OrderByDescending(p => p.GetPerformanceScore()).FirstOrDefault();
         if (top == null)
             throw new NotFoundException("No players found");
         return top;
     }
 
-    public IEnumerable<Player> GetPlayersPaged(int pageNumber, int pageSize) =>
-        _repository.GetAllPlayers().Skip((pageNumber - 1) * pageSize).Take(pageSize);
+    public async Task<IEnumerable<Player>> GetPlayersPagedAsync(int pageNumber, int pageSize)
+    {
+        var players = await _repository.GetAllPlayersAsync();
+        return players.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+    }
 
-    public IEnumerable<string> GetDistinctNationalities() =>
-        _repository.GetAllPlayers().Select(p => p.Nationality).Distinct();
+    public async Task<IEnumerable<string>> GetDistinctNationalitiesAsync()
+    {
+        var players = await _repository.GetAllPlayersAsync();
+        return players.Select(p => p.Nationality).Distinct();
+    }
 }

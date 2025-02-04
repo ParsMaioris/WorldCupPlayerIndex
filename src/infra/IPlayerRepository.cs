@@ -1,5 +1,5 @@
 public interface IPlayerRepository
 {
-    IEnumerable<Player> GetAllPlayers();
-    void UpdatePlayer(Player updatedPlayer);
+    Task<List<Player>> GetAllPlayersAsync();
+    Task UpdatePlayerAsync(Player updatedPlayer);
 }

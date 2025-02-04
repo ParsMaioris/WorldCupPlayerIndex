@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 public class EfPlayerRepository : IPlayerRepository
 {
     private readonly AppDbContext _context;
@@ -7,18 +9,18 @@ public class EfPlayerRepository : IPlayerRepository
         _context = context;
     }
 
-    public IEnumerable<Player> GetAllPlayers()
+    public async Task<List<Player>> GetAllPlayersAsync()
     {
-        return _context.Players.ToList();
+        return await _context.Players.ToListAsync();
     }
 
-    public void UpdatePlayer(Player updatedPlayer)
+    public async Task UpdatePlayerAsync(Player updatedPlayer)
     {
-        var existingPlayer = _context.Players.Find(updatedPlayer.Name);
+        var existingPlayer = await _context.Players.FindAsync(updatedPlayer.Name);
         if (existingPlayer != null)
         {
             _context.Entry(existingPlayer).CurrentValues.SetValues(updatedPlayer);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

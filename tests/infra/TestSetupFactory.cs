@@ -17,7 +17,7 @@ public static class TestSetupFactory
             case TestMode.Unit:
                 var sampleData = SeedData.CreateSamplePlayers().ToList();
                 var mockRepo = new Mock<IPlayerRepository>();
-                mockRepo.Setup(r => r.GetAllPlayers()).Returns(sampleData);
+                mockRepo.Setup(r => r.GetAllPlayersAsync()).ReturnsAsync(sampleData);
                 services.AddSingleton(mockRepo.Object);
                 break;
 

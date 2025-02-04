@@ -11,16 +11,16 @@ public class PlayerCommandController : ControllerBase
     }
 
     [HttpPost("{playerName}/record-goal")]
-    public ActionResult<Player> RecordGoal(string playerName)
+    public async Task<ActionResult<Player>> RecordGoalAsync(string playerName)
     {
-        var updatedPlayer = _service.RecordGoal(playerName);
+        var updatedPlayer = await _service.RecordGoalAsync(playerName);
         return Ok(updatedPlayer);
     }
 
     [HttpPost("record-goals")]
-    public ActionResult<IEnumerable<Player>> RecordGoals([FromBody] IEnumerable<string> playerNames)
+    public async Task<ActionResult<IEnumerable<Player>>> RecordGoalsAsync([FromBody] IEnumerable<string> playerNames)
     {
-        var updatedPlayers = _service.RecordGoals(playerNames);
+        var updatedPlayers = await _service.RecordGoalsAsync(playerNames);
         return Ok(updatedPlayers);
     }
 }

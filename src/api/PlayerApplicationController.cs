@@ -11,9 +11,9 @@ public class PlayerApplicationController : ControllerBase
     }
 
     [HttpGet("veterans")]
-    public ActionResult<IEnumerable<Player>> GetVeteranPlayers()
+    public async Task<ActionResult<IEnumerable<Player>>> GetVeteranPlayersAsync()
     {
-        var veterans = _service.GetVeteranPlayers();
+        var veterans = await _service.GetVeteranPlayersAsync();
         return Ok(veterans);
     }
 }

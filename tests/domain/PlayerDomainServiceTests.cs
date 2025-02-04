@@ -1,17 +1,15 @@
-using Microsoft.Extensions.DependencyInjection;
-
 [TestClass]
 public class PlayerDomainServiceTests
 {
     [DataTestMethod]
     [DataRow(TestMode.Unit)]
     [DataRow(TestMode.Integration)]
-    public void Test_GetVeteranPlayers_AllPlayersAreVeterans(TestMode mode)
+    public async Task Test_GetVeteranPlayers_AllPlayersAreVeterans(TestMode mode)
     {
         var provider = TestSetupFactory.CreateServiceProvider(mode);
         var domainService = provider.GetRequiredService<IPlayerDomainService>();
 
-        var veterans = domainService.GetVeteranPlayers().ToList();
+        var veterans = (await domainService.GetVeteranPlayersAsync()).ToList();
 
         Assert.IsTrue(veterans.All(p => p.Age >= 35),
             "One or more players in the result do not meet the veteran criteria (Age >= 35).");
@@ -20,12 +18,12 @@ public class PlayerDomainServiceTests
     [DataTestMethod]
     [DataRow(TestMode.Unit)]
     [DataRow(TestMode.Integration)]
-    public void Test_GetVeteranPlayers_ContainsExpectedVeteranNames(TestMode mode)
+    public async Task Test_GetVeteranPlayers_ContainsExpectedVeteranNames(TestMode mode)
     {
         var provider = TestSetupFactory.CreateServiceProvider(mode);
         var domainService = provider.GetRequiredService<IPlayerDomainService>();
 
-        var veterans = domainService.GetVeteranPlayers().ToList();
+        var veterans = (await domainService.GetVeteranPlayersAsync()).ToList();
 
         var expectedVeterans = new List<string>
         {
