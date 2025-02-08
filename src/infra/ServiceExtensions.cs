@@ -28,6 +28,9 @@ public static class ServiceExtensions
         services.AddScoped<IPlayerCommandService, PlayerCommandService>();
         services.AddScoped<IPlayerQueryService, PlayerQueryService>();
 
+        services.AddJwtAuth(configuration);
+        services.AddScoped<IJwtTokenService, JwtTokenService>();
+
         return services;
     }
 }
