@@ -57,6 +57,6 @@ public class PlayerCommandControllerTests
 
         var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>();
 
-        Assert.AreEqual("Player not found", errorResponse?.Error);
+        Assert.AreEqual("Player 'NonExistent' not found.", errorResponse?.Error);
     }
 }

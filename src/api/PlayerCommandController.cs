@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 public class PlayerCommandController : ControllerBase
 {
     private readonly IPlayerCommandService _service;
+
     public PlayerCommandController(IPlayerCommandService service)
     {
         _service = service;
@@ -15,14 +16,28 @@ public class PlayerCommandController : ControllerBase
     [HttpPost("{playerName}/record-goal")]
     public async Task<ActionResult<Player>> RecordGoalAsync(string playerName)
     {
-        var updatedPlayer = await _service.RecordGoalAsync(playerName);
-        return Ok(updatedPlayer);
+        try
+        {
+            var updatedPlayer = await _service.RecordGoalAsync(playerName);
+            return Ok(updatedPlayer);
+        }
+        catch (DomainException ex)
+        {
+            return StatusCode(ex.StatusCode, new { error = ex.Message });
+        }
     }
 
     [HttpPost("record-goals")]
     public async Task<ActionResult<IEnumerable<Player>>> RecordGoalsAsync([FromBody] IEnumerable<string> playerNames)
     {
-        var updatedPlayers = await _service.RecordGoalsAsync(playerNames);
-        return Ok(updatedPlayers);
+        try
+        {
+            var updatedPlayers = await _service.RecordGoalsAsync(playerNames);
+            return Ok(updatedPlayers);
+        }
+        catch (DomainException ex)
+        {
+            return StatusCode(ex.StatusCode, new { error = ex.Message });
+        }
     }
 }
