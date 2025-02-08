@@ -488,3 +488,4 @@ app.db
 app.db-wal
 app.db-shm
 .vscode/settings.json
+buildTools
