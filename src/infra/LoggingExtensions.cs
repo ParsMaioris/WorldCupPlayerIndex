@@ -7,6 +7,9 @@ public static class LoggingExtensions
             .Get<FileLoggerOptions>()
             ?? throw new ArgumentNullException("FileLoggerOptions cannot be null");
 
+        var binPath = Path.Combine(AppContext.BaseDirectory, "logs");
+        fileLoggerOptions.LogDirectory = binPath;
+
         builder.Logging.ClearProviders();
         builder.Logging.AddProvider(new FileLoggerProvider(fileLoggerOptions));
         builder.Logging.AddConsole();
