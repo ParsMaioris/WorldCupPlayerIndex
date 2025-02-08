@@ -6,9 +6,15 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        var projectDir = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "../../../src/infra"));
+        var projectDir = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "../../../"));
         builder.UseContentRoot(projectDir);
         builder.UseEnvironment("Development");
+
+        builder.ConfigureAppConfiguration((context, config) =>
+        {
+            config.SetBasePath(projectDir)
+                  .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+        });
 
         builder.ConfigureServices(services =>
         {

@@ -4,16 +4,19 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var fileLoggerOptions = new FileLoggerOptions
-{
-    LogDirectory = "logs",
-    FileNamePrefix = "app",
-    RetentionDays = 7,
-    MinimumLogLevel = LogLevel.Warning
-};
+var fileLoggerOptions = builder.Configuration
+    .GetSection("FileLoggerOptions")
+    .Get<FileLoggerOptions>();
 
 builder.Logging.ClearProviders();
-builder.Logging.AddProvider(new FileLoggerProvider(fileLoggerOptions));
+if (fileLoggerOptions != null)
+{
+    builder.Logging.AddProvider(new FileLoggerProvider(fileLoggerOptions));
+}
+else
+{
+    throw new ArgumentNullException(nameof(fileLoggerOptions), "FileLoggerOptions cannot be null");
+}
 builder.Logging.AddConsole();
 
 builder.Services.AddControllers();
@@ -21,16 +24,17 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo
+    var swaggerConfig = builder.Configuration.GetSection("Swagger");
+    c.SwaggerDoc(swaggerConfig["Version"], new OpenApiInfo
     {
-        Title = "Player API",
-        Version = "v1",
-        Description = "An elegant API for managing players."
+        Title = swaggerConfig["Title"],
+        Version = swaggerConfig["Version"],
+        Description = swaggerConfig["Description"]
     });
 });
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=app.db"));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IPlayerRepository, EfPlayerRepository>();
 builder.Services.AddScoped<IPlayerDomainService, PlayerDomainService>();
