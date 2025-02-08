@@ -1,3 +1,5 @@
+using System.Net.Http.Headers;
+
 [TestClass]
 public class PlayerApplicationControllerTests
 {
@@ -9,6 +11,9 @@ public class PlayerApplicationControllerTests
     {
         _factory = new CustomWebApplicationFactory();
         _client = _factory.CreateClient();
+        var token = TokenHelper.GetTokenAsync(_client!).GetAwaiter().GetResult();
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
     }
 
     [TestCleanup]

@@ -9,17 +9,33 @@ public class LocalNetworkJwtTokenService : IJwtTokenService
 {
     private readonly JwtSettings _settings;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IHostEnvironment _env;
 
-    public LocalNetworkJwtTokenService(IOptions<JwtSettings> options, IHttpContextAccessor httpContextAccessor)
+    public LocalNetworkJwtTokenService(IOptions<JwtSettings> options,
+                                       IHttpContextAccessor httpContextAccessor,
+                                       IHostEnvironment env)
     {
         _settings = options.Value;
         _httpContextAccessor = httpContextAccessor;
+        _env = env;
     }
 
     public string GenerateToken()
     {
         var context = _httpContextAccessor.HttpContext ?? throw new Exception("HttpContext not available");
-        var remoteIp = context.Connection.RemoteIpAddress ?? throw new Exception("Remote IP not available");
+        var remoteIp = context.Connection.RemoteIpAddress;
+        if (remoteIp == null)
+        {
+            if (_env.IsDevelopment() || _env.IsStaging())
+            {
+                remoteIp = IPAddress.Loopback;
+            }
+            else
+            {
+                throw new Exception("Remote IP not available");
+            }
+        }
+
         if (!IsLocalNetwork(remoteIp))
             throw new ForbiddenException("Token issuance is restricted to local network requests");
 

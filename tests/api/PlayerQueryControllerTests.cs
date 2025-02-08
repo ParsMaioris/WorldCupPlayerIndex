@@ -1,4 +1,4 @@
-using System.Net;
+using System.Net.Http.Headers;
 using System.Text.Json;
 
 [TestClass]
@@ -12,6 +12,9 @@ public class PlayerQueryControllerTests
     {
         _factory = new CustomWebApplicationFactory();
         _client = _factory.CreateClient();
+        var token = TokenHelper.GetTokenAsync(_client!).GetAwaiter().GetResult();
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
     }
 
     [TestCleanup]
@@ -88,6 +91,7 @@ public class PlayerQueryControllerTests
         var responseAsc = await _client!.GetAsync("/api/PlayerQuery/ordered-by-performance?descending=false");
         responseAsc.EnsureSuccessStatusCode();
         var asc = await responseAsc.Content.ReadFromJsonAsync<List<Player>>() ?? new List<Player>();
+
         var responseDesc = await _client.GetAsync("/api/PlayerQuery/ordered-by-performance?descending=true");
         responseDesc.EnsureSuccessStatusCode();
         var desc = await responseDesc.Content.ReadFromJsonAsync<List<Player>>() ?? new List<Player>();
