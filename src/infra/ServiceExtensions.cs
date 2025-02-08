@@ -11,11 +11,31 @@ public static class ServiceExtensions
         var swagger = configuration.GetSection("Swagger");
         services.AddSwaggerGen(c =>
         {
+            var swagger = configuration.GetSection("Swagger");
             c.SwaggerDoc(swagger["Version"], new OpenApiInfo
             {
                 Title = swagger["Title"],
                 Version = swagger["Version"],
                 Description = swagger["Description"]
+            });
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Description = "Enter 'Bearer' [space] and then your token",
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "Bearer"
+            });
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                {
+                    new OpenApiSecurityScheme {
+                        Reference = new OpenApiReference {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    new string[] { }
+                }
             });
         });
 
