@@ -15,7 +15,14 @@ public class PlayerApplicationController : ControllerBase
     [HttpGet("veterans")]
     public async Task<ActionResult<IEnumerable<Player>>> GetVeteranPlayersAsync()
     {
-        var veterans = await _service.GetVeteranPlayersAsync();
-        return Ok(veterans);
+        try
+        {
+            var veterans = await _service.GetVeteranPlayersAsync();
+            return Ok(veterans);
+        }
+        catch (NoVeteranPlayersFoundException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
     }
 }
