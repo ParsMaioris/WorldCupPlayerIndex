@@ -28,7 +28,7 @@ public class LocalNetworkJwtTokenService : IJwtTokenService
         var remoteIp = context.Connection.RemoteIpAddress;
         if (remoteIp == null)
         {
-            if (_env.IsDevelopment() || _env.IsStaging())
+            if (_env.IsEnvironment("Test"))
             {
                 remoteIp = IPAddress.Loopback;
             }

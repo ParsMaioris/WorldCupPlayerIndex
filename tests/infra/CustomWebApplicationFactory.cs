@@ -4,11 +4,20 @@ using Microsoft.EntityFrameworkCore;
 
 public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
+    private readonly Func<IEnumerable<Player>, IEnumerable<Player>>? _seedPlayersFilter;
+
+    public CustomWebApplicationFactory() : this(null) { }
+
+    public CustomWebApplicationFactory(Func<IEnumerable<Player>, IEnumerable<Player>>? seedPlayersFilter)
+    {
+        _seedPlayersFilter = seedPlayersFilter;
+    }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         var projectDir = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "../../../"));
         builder.UseContentRoot(projectDir);
-        builder.UseEnvironment("Development");
+        builder.UseEnvironment("Test");
 
         builder.ConfigureAppConfiguration((context, config) =>
         {
@@ -47,7 +56,12 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
                     if (!db.Players.Any())
                     {
-                        db.Players.AddRange(SeedData.CreateSamplePlayers());
+                        var players = SeedData.CreateSamplePlayers();
+                        if (_seedPlayersFilter != null)
+                        {
+                            players = _seedPlayersFilter(players);
+                        }
+                        db.Players.AddRange(players);
                         db.SaveChanges();
                     }
                 }

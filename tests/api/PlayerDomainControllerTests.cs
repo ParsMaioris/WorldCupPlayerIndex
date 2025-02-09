@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http.Headers;
 
 [TestClass]
@@ -50,5 +51,31 @@ public class PlayerDomainControllerTests
 
         Assert.IsTrue(asc.First().GetPerformanceScore() <= asc.Last().GetPerformanceScore());
         Assert.IsTrue(desc.First().GetPerformanceScore() >= desc.Last().GetPerformanceScore());
+    }
+
+    [TestMethod]
+    public async Task GetVeteranPlayers_NoVeteransFound_ReturnsNotFound()
+    {
+        using var factory = new CustomWebApplicationFactory(players => players.Where(p => p.Age < 35));
+        using var client = factory.CreateClient();
+        var token = TokenHelper.GetTokenAsync(client).GetAwaiter().GetResult();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var response = await client.GetAsync("/api/PlayerDomain/veterans");
+        Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+        var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+        Assert.AreEqual("No veteran players found.", errorResponse?.Error);
+    }
+
+    [TestMethod]
+    public async Task GetPlayersOrderedByPerformance_NoPlayersForRanking_ReturnsNotFound()
+    {
+        using var factory = new CustomWebApplicationFactory(players => Enumerable.Empty<Player>());
+        using var client = factory.CreateClient();
+        var token = TokenHelper.GetTokenAsync(client).GetAwaiter().GetResult();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var response = await client.GetAsync("/api/PlayerDomain/ordered-by-performance?descending=true");
+        Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+        var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+        Assert.AreEqual("No players are available for performance ranking.", errorResponse?.Error);
     }
 }

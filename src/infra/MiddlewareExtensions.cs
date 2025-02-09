@@ -24,9 +24,13 @@ public static class MiddlewareExtensions
     private static void SeedDatabase(this IApplicationBuilder app)
     {
         using var scope = app.ApplicationServices.CreateScope();
+        var env = scope.ServiceProvider.GetRequiredService<IHostEnvironment>();
+        if (env.IsEnvironment("Test"))
+        {
+            return;
+        }
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         db.Database.EnsureCreated();
-
         if (!db.Players.Any())
         {
             db.Players.AddRange(SeedData.CreateSamplePlayers());
