@@ -491,3 +491,6 @@ app.db-shm
 buildTools
 listPaths.js
 Game Plan.tex
+coverage/
+coverage-report/
+run-coverage.sh
