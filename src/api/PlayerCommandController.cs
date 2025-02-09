@@ -21,9 +21,17 @@ public class PlayerCommandController : ControllerBase
             var updatedPlayer = await _service.RecordGoalAsync(playerName);
             return Ok(updatedPlayer);
         }
-        catch (DomainException ex)
+        catch (CommandInvalidException ex)
         {
-            return StatusCode(ex.StatusCode, new { error = ex.Message });
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (CommandNotFoundException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (CommandForbiddenException ex)
+        {
+            return StatusCode(403, new { error = ex.Message });
         }
     }
 
@@ -35,9 +43,17 @@ public class PlayerCommandController : ControllerBase
             var updatedPlayers = await _service.RecordGoalsAsync(playerNames);
             return Ok(updatedPlayers);
         }
-        catch (DomainException ex)
+        catch (CommandInvalidException ex)
         {
-            return StatusCode(ex.StatusCode, new { error = ex.Message });
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (CommandNotFoundException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (CommandForbiddenException ex)
+        {
+            return StatusCode(403, new { error = ex.Message });
         }
     }
 }

@@ -10,13 +10,16 @@ public class PlayerCommandService : IPlayerCommandService
     public async Task<Player> RecordGoalAsync(string playerName)
     {
         if (string.IsNullOrWhiteSpace(playerName))
-            throw new InvalidInputException("Player name cannot be empty.");
+            throw new CommandInvalidException("Player name cannot be empty.");
 
         var players = await _repository.GetAllPlayersAsync();
         var player = players.FirstOrDefault(p => p.Name.Equals(playerName, StringComparison.OrdinalIgnoreCase));
 
         if (player == null)
-            throw new NotFoundException($"Player '{playerName}' not found.");
+            throw new CommandNotFoundException($"Player '{playerName}' not found.");
+
+        if (!player.IsVeteran())
+            throw new CommandForbiddenException("Only veteran players can record goals.");
 
         var updated = new Player(player.Name, player.Nationality, player.GoalsScored + 1, player.Age);
 
@@ -35,7 +38,7 @@ public class PlayerCommandService : IPlayerCommandService
     public async Task<IEnumerable<Player>> RecordGoalsAsync(IEnumerable<string> playerNames)
     {
         if (playerNames == null || !playerNames.Any())
-            throw new InvalidInputException("Player names list cannot be empty.");
+            throw new CommandInvalidException("Player names list cannot be empty.");
 
         var lowerNames = new HashSet<string>(playerNames.Select(n => n.ToLowerInvariant()));
         var players = (await _repository.GetAllPlayersAsync())
@@ -43,7 +46,10 @@ public class PlayerCommandService : IPlayerCommandService
             .ToList();
 
         if (!players.Any())
-            throw new NotFoundException("None of the specified players were found.");
+            throw new CommandNotFoundException("None of the specified players were found.");
+
+        if (players.Any(p => !p.IsVeteran()))
+            throw new CommandForbiddenException("Some players are not allowed to have goals recorded.");
 
         var updatedPlayers = players
             .Select(p => new Player(p.Name, p.Nationality, p.GoalsScored + 1, p.Age))

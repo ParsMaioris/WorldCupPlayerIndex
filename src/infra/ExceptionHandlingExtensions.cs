@@ -12,7 +12,7 @@ public static class ExceptionHandlingExtensions
 
                 int statusCode = exception switch
                 {
-                    DomainException domainEx => domainEx.StatusCode,
+                    JwtAuthenticationException => StatusCodes.Status403Forbidden,
                     PersistenceException => StatusCodes.Status500InternalServerError,
                     _ => StatusCodes.Status500InternalServerError
                 };

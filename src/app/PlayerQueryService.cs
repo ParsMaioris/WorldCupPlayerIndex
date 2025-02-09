@@ -57,7 +57,7 @@ public class PlayerQueryService : IPlayerQueryService
         var players = await _repository.GetAllPlayersAsync();
         var top = players.OrderByDescending(p => p.GetPerformanceScore()).FirstOrDefault();
         if (top == null)
-            throw new NotFoundException("No players found");
+            throw new QueryNotFoundException("No players found");
         return top;
     }
 

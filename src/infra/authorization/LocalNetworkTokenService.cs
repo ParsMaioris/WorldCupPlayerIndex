@@ -22,7 +22,9 @@ public class LocalNetworkJwtTokenService : IJwtTokenService
 
     public string GenerateToken()
     {
-        var context = _httpContextAccessor.HttpContext ?? throw new Exception("HttpContext not available");
+        var context = _httpContextAccessor.HttpContext
+            ?? throw new JwtAuthenticationException("HttpContext not available for token generation.");
+
         var remoteIp = context.Connection.RemoteIpAddress;
         if (remoteIp == null)
         {
@@ -32,12 +34,12 @@ public class LocalNetworkJwtTokenService : IJwtTokenService
             }
             else
             {
-                throw new Exception("Remote IP not available");
+                throw new JwtAuthenticationException("Remote IP not available.");
             }
         }
 
         if (!IsLocalNetwork(remoteIp))
-            throw new ForbiddenException("Token issuance is restricted to local network requests");
+            throw new JwtAuthenticationException("Token issuance is restricted to local network requests.");
 
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_settings.SecretKey);
