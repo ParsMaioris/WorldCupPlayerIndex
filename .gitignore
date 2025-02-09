@@ -489,3 +489,4 @@ app.db-wal
 app.db-shm
 .vscode/settings.json
 buildTools
+listPaths.js
