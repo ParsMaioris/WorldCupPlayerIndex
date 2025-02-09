@@ -86,21 +86,6 @@ public class PlayerQueryControllerTests
     }
 
     [TestMethod]
-    public async Task GetPlayersOrderedByPerformance_ReturnsSortedPlayers()
-    {
-        var responseAsc = await _client!.GetAsync("/api/PlayerQuery/ordered-by-performance?descending=false");
-        responseAsc.EnsureSuccessStatusCode();
-        var asc = await responseAsc.Content.ReadFromJsonAsync<List<Player>>() ?? new List<Player>();
-
-        var responseDesc = await _client.GetAsync("/api/PlayerQuery/ordered-by-performance?descending=true");
-        responseDesc.EnsureSuccessStatusCode();
-        var desc = await responseDesc.Content.ReadFromJsonAsync<List<Player>>() ?? new List<Player>();
-
-        Assert.IsTrue(asc.First().GetPerformanceScore() <= asc.Last().GetPerformanceScore());
-        Assert.IsTrue(desc.First().GetPerformanceScore() >= desc.Last().GetPerformanceScore());
-    }
-
-    [TestMethod]
     public async Task AnyPlayerReachedGoalThreshold_ReturnsCorrectBool()
     {
         var responseTrue = await _client!.GetAsync("/api/PlayerQuery/any-player-reached?threshold=100");

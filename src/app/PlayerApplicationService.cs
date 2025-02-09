@@ -11,4 +11,9 @@ public class PlayerApplicationService : IPlayerApplicationService
     {
         return await _playerDomainService.GetVeteranPlayersAsync();
     }
+
+    public async Task<IEnumerable<Player>> GetPlayersOrderedByPerformanceScoreAsync(bool descending = true)
+    {
+        return await _playerDomainService.GetPlayersOrderedByPerformanceScoreAsync(descending);
+    }
 }

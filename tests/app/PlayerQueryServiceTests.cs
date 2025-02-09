@@ -77,21 +77,6 @@ public class PlayerQueryServiceTests
     [DataTestMethod]
     [DataRow(TestMode.Unit)]
     [DataRow(TestMode.Integration)]
-    public async Task Test_GetPlayersOrderedByPerformanceScore(TestMode mode)
-    {
-        var provider = TestSetupFactory.CreateServiceProvider(mode);
-        var queryService = provider.GetRequiredService<IPlayerQueryService>();
-
-        var orderedDesc = (await queryService.GetPlayersOrderedByPerformanceScoreAsync(true)).ToList();
-        var orderedAsc = (await queryService.GetPlayersOrderedByPerformanceScoreAsync(false)).ToList();
-
-        Assert.IsTrue(orderedDesc.First().GetPerformanceScore() >= orderedDesc.Last().GetPerformanceScore());
-        Assert.IsTrue(orderedAsc.First().GetPerformanceScore() <= orderedAsc.Last().GetPerformanceScore());
-    }
-
-    [DataTestMethod]
-    [DataRow(TestMode.Unit)]
-    [DataRow(TestMode.Integration)]
     public async Task Test_AnyPlayerReachedGoalThreshold(TestMode mode)
     {
         var provider = TestSetupFactory.CreateServiceProvider(mode);

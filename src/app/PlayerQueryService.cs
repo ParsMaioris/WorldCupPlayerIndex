@@ -63,17 +63,6 @@ public class PlayerQueryService : IPlayerQueryService
                       .ToDictionary(g => g.Key, g => g.ToList());
     }
 
-    public async Task<IEnumerable<Player>> GetPlayersOrderedByPerformanceScoreAsync(bool descending = true)
-    {
-        var players = await _repository.GetAllPlayersAsync();
-        if (!players.Any())
-            throw new QueryNotFoundException("No players found to order by performance score.");
-
-        return descending
-            ? players.OrderByDescending(p => p.GetPerformanceScore())
-            : players.OrderBy(p => p.GetPerformanceScore());
-    }
-
     public async Task<bool> AnyPlayerReachedGoalThresholdAsync(int goalThreshold)
     {
         if (goalThreshold < 0)

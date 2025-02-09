@@ -38,4 +38,19 @@ public class PlayerDomainServiceTests
                 $"Expected veteran '{expected}' was not found in the returned list.");
         }
     }
+
+    [DataTestMethod]
+    [DataRow(TestMode.Unit)]
+    [DataRow(TestMode.Integration)]
+    public async Task Test_GetPlayersOrderedByPerformanceScore(TestMode mode)
+    {
+        var provider = TestSetupFactory.CreateServiceProvider(mode);
+        var domainService = provider.GetRequiredService<IPlayerDomainService>();
+
+        var orderedDesc = (await domainService.GetPlayersOrderedByPerformanceScoreAsync(true)).ToList();
+        var orderedAsc = (await domainService.GetPlayersOrderedByPerformanceScoreAsync(false)).ToList();
+
+        Assert.IsTrue(orderedDesc.First().GetPerformanceScore() >= orderedDesc.Last().GetPerformanceScore());
+        Assert.IsTrue(orderedAsc.First().GetPerformanceScore() <= orderedAsc.Last().GetPerformanceScore());
+    }
 }

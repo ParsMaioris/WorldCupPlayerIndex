@@ -25,4 +25,18 @@ public class PlayerDomainController : ControllerBase
             return NotFound(new { error = ex.Message });
         }
     }
+
+    [HttpGet("ordered-by-performance")]
+    public async Task<ActionResult<IEnumerable<Player>>> GetPlayersOrderedByPerformanceAsync([FromQuery] bool descending = true)
+    {
+        try
+        {
+            var players = await _service.GetPlayersOrderedByPerformanceScoreAsync(descending);
+            return Ok(players);
+        }
+        catch (QueryNotFoundException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+    }
 }

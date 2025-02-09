@@ -91,20 +91,6 @@ public class PlayerQueryController : ControllerBase
         }
     }
 
-    [HttpGet("ordered-by-performance")]
-    public async Task<ActionResult<IEnumerable<Player>>> GetPlayersOrderedByPerformanceAsync([FromQuery] bool descending = true)
-    {
-        try
-        {
-            var players = await _service.GetPlayersOrderedByPerformanceScoreAsync(descending);
-            return Ok(players);
-        }
-        catch (QueryNotFoundException ex)
-        {
-            return NotFound(new { error = ex.Message });
-        }
-    }
-
     [HttpGet("any-player-reached")]
     public async Task<ActionResult<bool>> AnyPlayerReachedGoalThresholdAsync([FromQuery] int threshold)
     {
