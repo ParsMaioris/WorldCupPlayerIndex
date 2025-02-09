@@ -22,7 +22,9 @@ public class PlayerDomainService : IPlayerDomainService
     {
         var players = await _repository.GetAllPlayersAsync();
         if (!players.Any())
-            throw new QueryNotFoundException("No players found to order by performance score.");
+        {
+            throw new NoPlayersForPerformanceRankingException();
+        }
 
         return descending
             ? players.OrderByDescending(p => p.GetPerformanceScore())

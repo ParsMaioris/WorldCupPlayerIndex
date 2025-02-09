@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 public class PlayerDomainController : ControllerBase
 {
     private readonly IPlayerApplicationService _service;
+
     public PlayerDomainController(IPlayerApplicationService service)
     {
         _service = service;
@@ -34,7 +35,7 @@ public class PlayerDomainController : ControllerBase
             var players = await _service.GetPlayersOrderedByPerformanceScoreAsync(descending);
             return Ok(players);
         }
-        catch (QueryNotFoundException ex)
+        catch (NoPlayersForPerformanceRankingException ex)
         {
             return NotFound(new { error = ex.Message });
         }
