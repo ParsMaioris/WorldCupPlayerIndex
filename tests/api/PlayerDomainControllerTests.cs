@@ -4,17 +4,14 @@ using System.Net.Http.Headers;
 [TestClass]
 public class PlayerDomainControllerTests
 {
-    private CustomWebApplicationFactory? _factory;
+    private ApiTestFactory? _factory;
     private HttpClient? _client;
 
     [TestInitialize]
     public void Setup()
     {
-        _factory = new CustomWebApplicationFactory();
-        _client = _factory.CreateClient();
-        var token = TokenHelper.GetTokenAsync(_client!).GetAwaiter().GetResult();
-        _client.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", token);
+        _factory = new ApiTestFactory();
+        _client = _factory.CreateAuthorizedClient();
     }
 
     [TestCleanup]
@@ -56,10 +53,8 @@ public class PlayerDomainControllerTests
     [TestMethod]
     public async Task GetVeteranPlayers_NoVeteransFound_ReturnsNotFound()
     {
-        using var factory = new CustomWebApplicationFactory(players => players.Where(p => p.Age < 35));
-        using var client = factory.CreateClient();
-        var token = TokenHelper.GetTokenAsync(client).GetAwaiter().GetResult();
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        using var factory = new ApiTestFactory(players => players.Where(p => p.Age < 35));
+        using var client = factory.CreateAuthorizedClient();
         var response = await client.GetAsync("/api/PlayerDomain/veterans");
         Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
         var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>();
@@ -69,10 +64,8 @@ public class PlayerDomainControllerTests
     [TestMethod]
     public async Task GetPlayersOrderedByPerformance_NoPlayersForRanking_ReturnsNotFound()
     {
-        using var factory = new CustomWebApplicationFactory(players => Enumerable.Empty<Player>());
-        using var client = factory.CreateClient();
-        var token = TokenHelper.GetTokenAsync(client).GetAwaiter().GetResult();
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        using var factory = new ApiTestFactory(players => Enumerable.Empty<Player>());
+        using var client = factory.CreateAuthorizedClient();
         var response = await client.GetAsync("/api/PlayerDomain/ordered-by-performance?descending=true");
         Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
         var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>();

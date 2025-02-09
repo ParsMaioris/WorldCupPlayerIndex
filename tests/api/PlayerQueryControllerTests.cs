@@ -5,17 +5,14 @@ using System.Text.Json;
 [TestClass]
 public class PlayerQueryControllerTests
 {
-    private CustomWebApplicationFactory? _factory;
+    private ApiTestFactory? _factory;
     private HttpClient? _client;
 
     [TestInitialize]
     public void Setup()
     {
-        _factory = new CustomWebApplicationFactory();
-        _client = _factory.CreateClient();
-        var token = TokenHelper.GetTokenAsync(_client!).GetAwaiter().GetResult();
-        _client.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", token);
+        _factory = new ApiTestFactory();
+        _client = _factory.CreateAuthorizedClient();
     }
 
     [TestCleanup]

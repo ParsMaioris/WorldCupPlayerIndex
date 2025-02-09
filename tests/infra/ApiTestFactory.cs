@@ -1,17 +1,27 @@
+using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
-public class CustomWebApplicationFactory : WebApplicationFactory<Program>
+public class ApiTestFactory : WebApplicationFactory<Program>
 {
     private readonly Func<IEnumerable<Player>, IEnumerable<Player>>? _seedPlayersFilter;
 
-    public CustomWebApplicationFactory() : this(null) { }
+    public ApiTestFactory() : this(null) { }
 
-    public CustomWebApplicationFactory(Func<IEnumerable<Player>, IEnumerable<Player>>? seedPlayersFilter)
+    public ApiTestFactory(Func<IEnumerable<Player>, IEnumerable<Player>>? seedPlayersFilter)
     {
         _seedPlayersFilter = seedPlayersFilter;
     }
+
+    public HttpClient CreateAuthorizedClient()
+    {
+        var client = CreateClient();
+        var token = TokenHelper.GetTokenAsync(client).GetAwaiter().GetResult();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        return client;
+    }
+
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -48,7 +58,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             {
                 var scopedServices = scope.ServiceProvider;
                 var db = scopedServices.GetRequiredService<AppDbContext>();
-                var logger = scopedServices.GetRequiredService<ILogger<CustomWebApplicationFactory>>();
+                var logger = scopedServices.GetRequiredService<ILogger<ApiTestFactory>>();
 
                 try
                 {
