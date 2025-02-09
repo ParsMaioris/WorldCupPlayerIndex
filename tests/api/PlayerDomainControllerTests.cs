@@ -53,7 +53,7 @@ public class PlayerDomainControllerTests
     [TestMethod]
     public async Task GetVeteranPlayers_NoVeteransFound_ReturnsNotFound()
     {
-        using var factory = new ApiTestFactory(players => players.Where(p => p.Age < 35));
+        using var factory = new ApiTestFactory(ApiExceptionScenario.NoPlayersExist);
         using var client = factory.CreateAuthorizedClient();
         var response = await client.GetAsync("/api/PlayerDomain/veterans");
         Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
@@ -64,7 +64,7 @@ public class PlayerDomainControllerTests
     [TestMethod]
     public async Task GetPlayersOrderedByPerformance_NoPlayersForRanking_ReturnsNotFound()
     {
-        using var factory = new ApiTestFactory(players => Enumerable.Empty<Player>());
+        using var factory = new ApiTestFactory(ApiExceptionScenario.NoPlayersExist);
         using var client = factory.CreateAuthorizedClient();
         var response = await client.GetAsync("/api/PlayerDomain/ordered-by-performance?descending=true");
         Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);

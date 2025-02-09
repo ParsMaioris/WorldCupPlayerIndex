@@ -14,6 +14,22 @@ public class ApiTestFactory : WebApplicationFactory<Program>
         _seedPlayersFilter = seedPlayersFilter;
     }
 
+    public ApiTestFactory(ApiExceptionScenario scenario)
+    {
+        _seedPlayersFilter = scenario switch
+        {
+            ApiExceptionScenario.NonExistent => players => Enumerable.Empty<Player>(),
+            ApiExceptionScenario.NoPlayersExist => players => Enumerable.Empty<Player>(),
+            ApiExceptionScenario.NonVeteran => players => players.Select(p =>
+                p.Name.Equals("SomePlayer", StringComparison.OrdinalIgnoreCase)
+                    ? new Player(p.Name, p.Nationality, p.GoalsScored, 30)
+                    : p
+            ).Concat(new List<Player> { new Player("SomePlayer", "Country", 10, 30) }),
+            ApiExceptionScenario.NoVeteransExist => players => players.Where(p => !p.IsVeteran()),
+            _ => players => players,
+        };
+    }
+
     public HttpClient CreateAuthorizedClient()
     {
         var client = CreateClient();
