@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 [Authorize]
 [ApiController]
 [Route("api/[controller]")]
-public class PlayerApplicationController : ControllerBase
+public class PlayerDomainController : ControllerBase
 {
     private readonly IPlayerApplicationService _service;
-    public PlayerApplicationController(IPlayerApplicationService service)
+    public PlayerDomainController(IPlayerApplicationService service)
     {
         _service = service;
     }

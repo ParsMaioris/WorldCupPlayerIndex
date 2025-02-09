@@ -1,7 +1,7 @@
 using System.Net.Http.Headers;
 
 [TestClass]
-public class PlayerApplicationControllerTests
+public class PlayerDomainControllerTests
 {
     private CustomWebApplicationFactory? _factory;
     private HttpClient? _client;
@@ -26,7 +26,7 @@ public class PlayerApplicationControllerTests
     [TestMethod]
     public async Task GetVeteranPlayers_ReturnsExpectedPlayers()
     {
-        var response = await _client!.GetAsync("/api/PlayerApplication/veterans");
+        var response = await _client!.GetAsync("/api/PlayerDomain/veterans");
         response.EnsureSuccessStatusCode();
         var players = await response.Content.ReadFromJsonAsync<List<Player>>() ?? new List<Player>();
         var expectedNames = new List<string> { "Cristiano Ronaldo", "Lionel Messi", "Ángel Di María" };
