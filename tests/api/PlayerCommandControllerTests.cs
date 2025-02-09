@@ -42,37 +42,36 @@ public class PlayerCommandControllerTests
         Assert.IsTrue(players.Exists(p => p.Name == "Cristiano Ronaldo" && p.GoalsScored == 801));
     }
 
-    [TestMethod]
-    public async Task RecordGoal_NonExistentPlayer_ReturnsNotFound()
+    [DataTestMethod]
+    [DataRow(ApiExceptionScenario.NonExistent, "NonExistent", HttpStatusCode.NotFound, "Player 'NonExistent' not found.")]
+    [DataRow(ApiExceptionScenario.NonVeteran, "SomePlayer", HttpStatusCode.Forbidden, "Only veteran players can record goals.")]
+    public async Task RecordGoal_ParameterizedTests(ApiExceptionScenario scenario, string playerName, HttpStatusCode expectedStatusCode, string expectedError)
     {
-        using var factory = new ApiTestFactory(ApiExceptionScenario.NonExistent);
+        using var factory = new ApiTestFactory(scenario);
         using var client = factory.CreateAuthorizedClient();
-        var response = await client.PostAsync("/api/PlayerCommand/NonExistent/record-goal", null);
-        Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
-        var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>();
-        Assert.AreEqual("Player 'NonExistent' not found.", errorResponse?.Error);
-    }
-
-    [TestMethod]
-    public async Task RecordGoal_NonVeteranPlayer_ReturnsForbidden()
-    {
-        using var factory = new ApiTestFactory(ApiExceptionScenario.NonVeteran);
-        using var client = factory.CreateAuthorizedClient();
-        var response = await client.PostAsync("/api/PlayerCommand/SomePlayer/record-goal", null);
-        Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
-        var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>();
-        Assert.AreEqual("Only veteran players can record goals.", errorResponse?.Error);
-    }
-
-    [TestMethod]
-    public async Task RecordGoal_EmptyPlayerName_ReturnsBadRequest()
-    {
-        using var factory = new ApiTestFactory(ApiExceptionScenario.Default);
-        using var client = factory.CreateAuthorizedClient();
-        var encodedPlayerName = Uri.EscapeDataString(" ");
+        var encodedPlayerName = Uri.EscapeDataString(playerName);
         var response = await client.PostAsync($"/api/PlayerCommand/{encodedPlayerName}/record-goal", null);
-        Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.AreEqual(expectedStatusCode, response.StatusCode);
         var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>();
-        Assert.AreEqual("The playerName field is required.", errorResponse?.Error);
+        Assert.AreEqual(expectedError, errorResponse?.Error);
+    }
+
+    [DataTestMethod]
+    [DataRow(ApiExceptionScenario.Default, "", HttpStatusCode.BadRequest, "Player names list cannot be empty.")]
+    [DataRow(ApiExceptionScenario.NonExistent, "NonExistent1,NonExistent2", HttpStatusCode.NotFound, "None of the specified players were found.")]
+    [DataRow(ApiExceptionScenario.NonVeteran, "SomePlayer", HttpStatusCode.Forbidden, "Some players are not allowed to have goals recorded.")]
+    public async Task RecordGoals_ExceptionScenarios(ApiExceptionScenario scenario, string playerNamesCsv, HttpStatusCode expectedStatusCode, string expectedError)
+    {
+        IEnumerable<string> playerNames = string.IsNullOrWhiteSpace(playerNamesCsv)
+            ? new List<string>()
+            : playerNamesCsv.Split(',').Select(n => n.Trim()).ToList();
+
+        using var factory = new ApiTestFactory(scenario);
+        using var client = factory.CreateAuthorizedClient();
+        var content = JsonContent.Create(playerNames);
+        var response = await client.PostAsync("/api/PlayerCommand/record-goals", content);
+        Assert.AreEqual(expectedStatusCode, response.StatusCode);
+        var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+        Assert.AreEqual(expectedError, errorResponse?.Error);
     }
 }
