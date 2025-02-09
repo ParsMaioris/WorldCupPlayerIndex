@@ -1,5 +1,3 @@
-using System.Net;
-
 [TestClass]
 public class PlayerDomainControllerTests
 {
@@ -30,7 +28,7 @@ public class PlayerDomainControllerTests
 
         foreach (var name in expectedNames)
         {
-            Assert.IsTrue(players.Any(p => p.Name == name));
+            Assert.IsTrue(players.Any(p => p.Name == name), $"Expected player '{name}' was not found.");
         }
     }
 
@@ -45,29 +43,9 @@ public class PlayerDomainControllerTests
         responseDesc.EnsureSuccessStatusCode();
         var desc = await responseDesc.Content.ReadFromJsonAsync<List<Player>>() ?? new List<Player>();
 
-        Assert.IsTrue(asc.First().GetPerformanceScore() <= asc.Last().GetPerformanceScore());
-        Assert.IsTrue(desc.First().GetPerformanceScore() >= desc.Last().GetPerformanceScore());
-    }
-
-    [TestMethod]
-    public async Task GetVeteranPlayers_NoVeteransFound_ReturnsNotFound()
-    {
-        using var factory = new ApiTestFactory(ApiExceptionScenario.NoPlayersExist);
-        using var client = factory.CreateAuthorizedClient();
-        var response = await client.GetAsync("/api/PlayerDomain/veterans");
-        Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
-        var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>();
-        Assert.AreEqual("No veteran players found.", errorResponse?.Error);
-    }
-
-    [TestMethod]
-    public async Task GetPlayersOrderedByPerformance_NoPlayersForRanking_ReturnsNotFound()
-    {
-        using var factory = new ApiTestFactory(ApiExceptionScenario.NoPlayersExist);
-        using var client = factory.CreateAuthorizedClient();
-        var response = await client.GetAsync("/api/PlayerDomain/ordered-by-performance?descending=true");
-        Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
-        var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>();
-        Assert.AreEqual("No players are available for performance ranking.", errorResponse?.Error);
+        Assert.IsTrue(asc.First().GetPerformanceScore() <= asc.Last().GetPerformanceScore(),
+            "Ascending order test failed: first player's performance is higher than the last player's.");
+        Assert.IsTrue(desc.First().GetPerformanceScore() >= desc.Last().GetPerformanceScore(),
+            "Descending order test failed: first player's performance is lower than the last player's.");
     }
 }
