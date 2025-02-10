@@ -8,13 +8,13 @@ public static class LoggingExtensions
     {
         var config = builder.Configuration;
 
-        var sumoLogicUrl = config.GetValue<string>("CustomLogging:SumoLogicUrl");
+        var sumoLogicUrl = config.GetValue<string>("SumoLogic:Endpoint");
         if (string.IsNullOrWhiteSpace(sumoLogicUrl))
-            throw new Exception("SumoLogic URL not configured under 'CustomLogging:SumoLogicUrl'.");
+            throw new Exception("SumoLogic URL not configured under 'SumoLogic:SumoLogicUrl'.");
 
-        var sourceName = config.GetValue<string>("CustomLogging:SourceName");
+        var sourceName = config.GetValue<string>("SumoLogic:Source");
         if (string.IsNullOrWhiteSpace(sourceName))
-            throw new Exception("Source name not configured under 'CustomLogging:SourceName'.");
+            throw new Exception("Source name not configured under 'SumoLogic:Endpoint'.");
 
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
