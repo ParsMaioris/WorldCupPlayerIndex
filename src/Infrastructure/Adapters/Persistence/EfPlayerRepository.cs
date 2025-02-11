@@ -16,11 +16,20 @@ public class EfPlayerRepository : IPlayerRepository
 
     public async Task UpdatePlayerAsync(Player updatedPlayer)
     {
-        var existingPlayer = await _context.Players.FindAsync(updatedPlayer.Name);
-        if (existingPlayer != null)
+        try
         {
+            var existingPlayer = await _context.Players.FindAsync(updatedPlayer.Name);
+            if (existingPlayer == null)
+            {
+                throw new PersistenceException($"Player '{updatedPlayer.Name}' not found.");
+            }
+
             _context.Entry(existingPlayer).CurrentValues.SetValues(updatedPlayer);
             await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new PersistenceException("An error occurred while updating the player.", ex);
         }
     }
 }

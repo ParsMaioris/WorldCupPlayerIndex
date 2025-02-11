@@ -5,20 +5,27 @@ public static class EfCoreSqliteSetup
 {
     public static AppDbContext CreateInMemoryContext()
     {
-        var connection = new SqliteConnection("Data Source=:memory:");
-        connection.Open();
+        try
+        {
+            var connection = new SqliteConnection("Data Source=:memory:");
+            connection.Open();
 
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseSqlite(connection)
-            .Options;
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseSqlite(connection)
+                .Options;
 
-        var context = new AppDbContext(options);
+            var context = new AppDbContext(options);
 
-        context.Database.EnsureCreated();
+            context.Database.EnsureCreated();
 
-        context.Players.AddRange(SeedData.CreateSamplePlayers());
-        context.SaveChanges();
+            context.Players.AddRange(SeedData.CreateSamplePlayers());
+            context.SaveChanges();
 
-        return context;
+            return context;
+        }
+        catch (Exception ex)
+        {
+            throw new PersistenceException("Failed to create the in-memory SQLite context.", ex);
+        }
     }
 }

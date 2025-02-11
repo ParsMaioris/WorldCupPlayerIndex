@@ -23,14 +23,7 @@ public class PlayerCommandService : IPlayerCommandService
 
         var updated = new Player(player.Name, player.Nationality, player.GoalsScored + 1, player.Age);
 
-        try
-        {
-            await _repository.UpdatePlayerAsync(updated);
-        }
-        catch (Exception ex)
-        {
-            throw new PersistenceException("Failed to update player record.", ex);
-        }
+        await _repository.UpdatePlayerAsync(updated);
 
         return updated;
     }
@@ -55,16 +48,9 @@ public class PlayerCommandService : IPlayerCommandService
             .Select(p => new Player(p.Name, p.Nationality, p.GoalsScored + 1, p.Age))
             .ToList();
 
-        try
+        foreach (var p in updatedPlayers)
         {
-            foreach (var p in updatedPlayers)
-            {
-                await _repository.UpdatePlayerAsync(p);
-            }
-        }
-        catch (Exception ex)
-        {
-            throw new PersistenceException("Failed to update multiple player records.", ex);
+            await _repository.UpdatePlayerAsync(p);
         }
 
         return updatedPlayers;
